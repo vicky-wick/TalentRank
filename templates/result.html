@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Comparison Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --font-DelaGothicOne: 'Inter', sans-serif;
+            --font-SpaceMono: monospace;
+            --background: #0d0d0d;
+            --input-focus: #2d8cf0;
+            --font-color: #e8e8e8;
+            --font-color-sub: #999;
+            --bg-color: #1a1a1a;
+            --main-color: #e8e8e8;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--font-color);
+            font-family: var(--font-DelaGothicOne);
+            min-height: 100vh;
+            padding: 30px 0;
+        }
+
+        /* Card style matching the form aesthetic */
+        .card-box {
+            padding: 20px;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-radius: 5px;
+            border: 2px solid var(--main-color);
+            box-shadow: 4px 4px var(--main-color);
+            margin-bottom: 20px;
+        }
+
+        .card-box h3 {
+            font-weight: 700;
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .card-box .sub-text {
+            font-family: var(--font-SpaceMono);
+            color: var(--font-color-sub);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .separator {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .separator > div {
+            width: 100px;
+            height: 3px;
+            border-radius: 5px;
+            background-color: var(--font-color-sub);
+        }
+
+        .separator > span {
+            color: var(--font-color);
+            font-family: var(--font-SpaceMono);
+            font-weight: 600;
+        }
+
+        .oauthButton {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 20px;
+            width: 250px;
+            height: 40px;
+            border-radius: 5px;
+            border: 2px solid var(--main-color);
+            background-color: var(--bg-color);
+            box-shadow: 4px 4px var(--main-color);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--font-color);
+            cursor: pointer;
+            transition: all 250ms;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            text-decoration: none;
+        }
+
+        .oauthButton::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background-color: #212121;
+            z-index: -1;
+            box-shadow: 4px 8px 19px -3px rgba(0, 0, 0, 0.27);
+            transition: all 250ms;
+        }
+
+        .oauthButton:hover {
+            color: #e8e8e8;
+        }
+
+        .oauthButton:hover::before {
+            width: 100%;
+        }
+
+        /* Score display */
+        .score-big {
+            font-size: 56px;
+            font-weight: 900;
+            color: var(--main-color);
+            line-height: 1;
+        }
+
+        .winner-card {
+            border: 3px solid #2d8cf0;
+            box-shadow: 6px 6px #2d8cf0;
+        }
+
+        .badge-skill {
+            background: var(--main-color);
+            color: #fff;
+            margin: 2px;
+            font-weight: 500;
+            font-size: 12px;
+        }
+
+        .preview-text {
+            color: var(--font-color-sub);
+            font-style: italic;
+            font-size: 13px;
+            border-left: 3px solid #2d8cf0;
+            padding-left: 10px;
+            margin-bottom: 10px;
+        }
+
+        .similarity-card {
+            background: var(--main-color);
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            border-radius: 5px;
+            border: 2px solid var(--main-color);
+            box-shadow: 4px 4px rgba(0,0,0,0.3);
+        }
+
+        .similarity-card .score-big {
+            color: #fff;
+        }
+
+        .winner-banner {
+            background: #2d8cf0;
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            border-radius: 5px;
+            border: 2px solid var(--main-color);
+            box-shadow: 4px 4px var(--main-color);
+        }
+
+        .reason-item {
+            font-family: var(--font-SpaceMono);
+            font-weight: 600;
+            color: #2d8cf0;
+        }
+
+        table {
+            font-family: var(--font-SpaceMono);
+            font-size: 14px;
+        }
+
+        table thead th {
+            background: var(--main-color);
+            color: #fff;
+            font-weight: 700;
+            border: none;
+        }
+
+        table tbody td {
+            border-bottom: 2px solid #eee;
+            padding: 10px;
+        }
+
+        .winner-cell { color: #2d8cf0; font-weight: 700; }
+        .loser-cell { color: var(--font-color-sub); }
+        .tie-cell { color: #999; }
+
+        .icon {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 style="font-weight: 900; font-size: 28px;">Candidate Comparison Results</h1>
+        </div>
+
+        <!-- Similarity Score -->
+        <div class="row mb-4 justify-content-center">
+            <div class="col-md-6">
+                <div class="similarity-card">
+                    <p style="margin:0; font-size:14px; font-family: var(--font-SpaceMono);">Skill Semantic Similarity</p>
+                    <span class="score-big">{{ comparison.similarity }}%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Candidate Cards -->
+        <div class="row mb-4">
+            <!-- Candidate A -->
+            <div class="col-md-6">
+                <div class="card-box {% if comparison.overall_winner == 'Candidate A' %}winner-card{% endif %}">
+                    <h3>Candidate A</h3>
+                    <span class="sub-text">{{ data_a.filename }}</span>
+
+                    <div class="separator">
+                        <div></div>
+                        <span>ATS</span>
+                        <div></div>
+                    </div>
+
+                    <div class="text-center">
+                        <span class="score-big">{{ data_a.ats_score }}</span>
+                        <p class="sub-text">ATS Score</p>
+                    </div>
+
+                    <div class="separator">
+                        <div></div>
+                        <span>Details</span>
+                        <div></div>
+                    </div>
+
+                    <p class="preview-text">{{ data_a.preview }}</p>
+
+                    <p style="margin:0;"><strong>Experience:</strong> {{ data_a.years }} years</p>
+                    <p style="margin:0;"><strong>Leadership:</strong> {{ data_a.scores.leadership }} / 100</p>
+                    <p style="margin:0;"><strong>Education:</strong> <span class="sub-text">{{ data_a.edu | join(', ') if data_a.edu else 'None detected' }}</span></p>
+                    <p style="margin:0;"><strong>Certifications:</strong> <span class="sub-text">{{ data_a.certs | join(', ') if data_a.certs else 'None detected' }}</span></p>
+
+                    <div class="separator">
+                        <div></div>
+                        <span>Skills ({{ data_a.skills|length }})</span>
+                        <div></div>
+                    </div>
+
+                    <div>
+                        {% for skill in data_a.skills[:15] %}
+                            <span class="badge badge-skill">{{ skill }}</span>
+                        {% endfor %}
+                        {% if data_a.skills|length > 15 %}
+                            <span class="badge" style="background:#666;color:#fff;">+{{ data_a.skills|length - 15 }} more</span>
+                        {% endif %}
+                        {% if data_a.skills|length == 0 %}
+                            <span class="sub-text">No ESCO skills matched</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Candidate B -->
+            <div class="col-md-6">
+                <div class="card-box {% if comparison.overall_winner == 'Candidate B' %}winner-card{% endif %}">
+                    <h3>Candidate B</h3>
+                    <span class="sub-text">{{ data_b.filename }}</span>
+
+                    <div class="separator">
+                        <div></div>
+                        <span>ATS</span>
+                        <div></div>
+                    </div>
+
+                    <div class="text-center">
+                        <span class="score-big">{{ data_b.ats_score }}</span>
+                        <p class="sub-text">ATS Score</p>
+                    </div>
+
+                    <div class="separator">
+                        <div></div>
+                        <span>Details</span>
+                        <div></div>
+                    </div>
+
+                    <p class="preview-text">{{ data_b.preview }}</p>
+
+                    <p style="margin:0;"><strong>Experience:</strong> {{ data_b.years }} years</p>
+                    <p style="margin:0;"><strong>Leadership:</strong> {{ data_b.scores.leadership }} / 100</p>
+                    <p style="margin:0;"><strong>Education:</strong> <span class="sub-text">{{ data_b.edu | join(', ') if data_b.edu else 'None detected' }}</span></p>
+                    <p style="margin:0;"><strong>Certifications:</strong> <span class="sub-text">{{ data_b.certs | join(', ') if data_b.certs else 'None detected' }}</span></p>
+
+                    <div class="separator">
+                        <div></div>
+                        <span>Skills ({{ data_b.skills|length }})</span>
+                        <div></div>
+                    </div>
+
+                    <div>
+                        {% for skill in data_b.skills[:15] %}
+                            <span class="badge badge-skill">{{ skill }}</span>
+                        {% endfor %}
+                        {% if data_b.skills|length > 15 %}
+                            <span class="badge" style="background:#666;color:#fff;">+{{ data_b.skills|length - 15 }} more</span>
+                        {% endif %}
+                        {% if data_b.skills|length == 0 %}
+                            <span class="sub-text">No ESCO skills matched</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Winner Banner -->
+        <div class="winner-banner mb-4">
+            <h2 style="margin:0; font-weight:900;">🏆 {{ comparison.overall_winner }}</h2>
+            <div class="mt-2">
+                {% for reason in comparison.reasons %}
+                    <span class="reason-item" style="color:#fff;">✓ {{ reason }} &nbsp;</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Detailed Table -->
+        <div class="card-box">
+            <h3>Detailed Comparison</h3>
+            <div class="separator">
+                <div></div>
+                <span>Scores</span>
+                <div></div>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th class="text-center">A — {{ data_a.filename }}</th>
+                            <th class="text-center">B — {{ data_b.filename }}</th>
+                            <th class="text-center">Winner</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in comparison.table %}
+                        <tr>
+                            <td><strong>{{ row.category }}</strong></td>
+                            <td class="text-center">{{ row.a }}</td>
+                            <td class="text-center">{{ row.b }}</td>
+                            <td class="text-center {% if row.winner == 'A' %}winner-cell{% elif row.winner == 'B' %}winner-cell{% else %}tie-cell{% endif %}">
+                                {{ row.winner }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="text-center mt-4 mb-5">
+            <a href="/" class="oauthButton" style="margin: 0 auto;">Upload New Resumes</a>
+        </div>
+
+    </div>
+</body>
+</html>
