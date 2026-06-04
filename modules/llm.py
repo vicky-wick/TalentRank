@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY", "AQ.Ab8RN6II8st-86-oW6VWDHsXCzasmadfWD73cvxaUYOobB8cgQ"))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 def get_related_skills(skill):
     prompt = f"What technologies and domains are related to {skill}? Return a JSON object with a single key 'related_skills' containing a list of strings."
