@@ -1,8 +1,6 @@
 # TalentRank
+
 AI-powered resume comparison and ATS scoring platform that ranks candidates using NLP, semantic embeddings, ESCO skill taxonomy, and LLM-powered analysis.
-
-# AI Resume Matcher
-
 An intelligent, side-by-side candidate comparison and resume scoring platform built using Flask, natural language processing (NLP), and vector embeddings. It parses PDF resumes, extracts key performance indicators (experience, education, leadership, certifications), maps technical skills using a standardized taxonomy, and performs semantic comparison.
 
 ---
