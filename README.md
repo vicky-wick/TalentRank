@@ -105,15 +105,47 @@ Open your browser and navigate to `http://127.0.0.1:5000/`.
 
 ---
 
-## 📊 Evaluation Logic & Weights
+## 📊 Evaluation Logic, Methods & Weights
 
-The comparison system evaluates candidates using a combined scoring rubric:
+### 1. ATS Numerical Score Computation
+The system computes an overall **ATS Score (out of 100)** for each candidate using a weighted sum of individual metric scores:
 
-| Metric | Calculation Method | Weight |
-| :--- | :--- | :--- |
-| **Skills** | Based on unique ESCO matched skills extracted from resume (10 pts per skill, max 100). | 40% |
-| **Experience** | Computed from chronological date-ranges (<=1 yr: 40 pts, <=3 yrs: 80 pts, >3 yrs: 100 pts). | 25% |
-| **Projects** | LLM-based complexity scoring evaluation of candidate projects. | 15% |
-| **Leadership** | Counts leadership Action Verbs (15 pts per keyword, max 100). | 10% |
-| **Education** | Based on number of degrees found (50 pts per degree, max 100). | 5% |
-| **Certifications** | Counts detected professional certifications (30 pts per certification, max 100). | 5% |
+$$\text{ATS Score} = (0.40 \times \text{Skill Score}) + (0.25 \times \text{Experience Score}) + (0.15 \times \text{Project Score}) + (0.10 \times \text{Leadership Score}) + (0.05 \times \text{Certification Score}) + (0.05 \times \text{Education Score})$$
+
+#### Categorical Score Metrics:
+*   **Skills Score (40% Weight)**:
+    *   Calculated as: $\min(100, \text{number of skills} \times 10)$
+*   **Experience Score (25% Weight)**:
+    *   $\le 0$ years: $20\text{ pts}$
+    *   $\le 1$ year: $40\text{ pts}$
+    *   $\le 3$ years: $80\text{ pts}$
+    *   $> 3$ years: $100\text{ pts}$
+*   **Project Score (15% Weight)**:
+    *   Evaluates project complexity (rated from $1\text{ to }100$, defaults to $75\text{ for MVP}$).
+*   **Leadership Score (10% Weight)**:
+    *   Analyzes presence of leadership action verbs (e.g. *led*, *managed*, *mentored*, *directed*), scoring $15\text{ pts}$ per unique verb up to a maximum of $100\text{ pts}$.
+*   **Education Score (5% Weight)**:
+    *   Calculated as: $\min(100, \text{number of degrees} \times 50)$
+*   **Certification Score (5% Weight)**:
+    *   Calculated as: $\min(100, \text{number of certifications} \times 30)$
+
+---
+
+### 2. Semantic Similarity Score (Cosine Similarity)
+To perform side-by-side profile comparisons, the system measures the semantic overlap between the candidates' skill profiles:
+
+#### Embedding Generation:
+1. Candidate skills are extracted and normalized against the ESCO database.
+2. Each individual skill is embedded into a dense vector space using a local `BAAI/bge-small-en-v1.5` SentenceTransformer model (producing 384-dimensional vectors).
+3. The individual skill embeddings are averaged (mean pooled) to represent the candidate's complete profile vector $\mathbf{u}$ (or $\mathbf{v}$):
+   $$\mathbf{u} = \frac{1}{N}\sum_{i=1}^{N}\text{embedding}(\text{skill}_i)$$
+
+#### Similarity Calculation:
+We compute the **Cosine Similarity** between the averaged profile vectors of Candidate A ($\mathbf{u}$) and Candidate B ($\mathbf{v}$), and scale the result to a percentage ($0\text{ to }100\%$):
+
+$$\text{Similarity Score} = \text{cosine\_similarity}(\mathbf{u}, \mathbf{v}) \times 100 = \left( \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\| \|\mathbf{v}\|} \right) \times 100$$
+
+Where:
+*   $\mathbf{u} \cdot \mathbf{v}$ is the dot product of the two vectors.
+*   $\|\mathbf{u}\|$ and $\|\mathbf{v}\|$ are the Euclidean norms (magnitudes) of the vectors.
+
