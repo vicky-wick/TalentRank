@@ -143,7 +143,7 @@ To perform side-by-side profile comparisons, the system measures the semantic ov
 #### Similarity Calculation:
 We compute the **Cosine Similarity** between the averaged profile vectors of Candidate A ($\mathbf{u}$) and Candidate B ($\mathbf{v}$), and scale the result to a percentage ($0\text{ to }100\%$):
 
-$$\text{Similarity Score} = \text{cosine\_similarity}(\mathbf{u}, \mathbf{v}) \times 100 = \left( \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\| \|\mathbf{v}\|} \right) \times 100$$
+$$\text{Similarity Score} = \text{CosineSimilarity}(\mathbf{u}, \mathbf{v}) \times 100 = \left( \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\| \|\mathbf{v}\|} \right) \times 100$$
 
 Where:
 *   $\mathbf{u} \cdot \mathbf{v}$ is the dot product of the two vectors.
